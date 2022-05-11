@@ -19,7 +19,7 @@ const SignUp = () => {
 						className="block text-gray-700 text-sm font-bold mb-2"
 						htmlFor="username"
 					>
-						Your @username
+						Your Username
 					</label>
 					<input
 						className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -63,7 +63,7 @@ const SignUp = () => {
 					className="h-10 px-6 font-semibold rounded-md bg-indigo-500 text-white"
 					onClick={() => createUser(userName, fullName, imgLink)}
 				>
-					Wave 👋
+					Sign Up
 				</button>
 			</div>
 		</div>

@@ -30,3 +30,16 @@ export const getContractWrite = () => {
 	);
 	return deCalendContract;
 };
+
+export const handleErr = (err) => {
+	let finalErr = 'Unexpected error';
+	if (err.code === 4001) {
+		let temp = err.message.split(': ');
+		finalErr = temp[1].split(".'")[0];
+	} else if (err.code === -32603) {
+		let temp = err.data.message.split(" '");
+		finalErr = temp[1].split(".'")[0];
+	}
+
+	return finalErr;
+};

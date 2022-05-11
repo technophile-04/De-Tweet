@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import { getContractReadOnly, getContractWrite } from '../utils';
+import { getContractReadOnly, getContractWrite, handleErr } from '../utils';
+import toast from 'react-hot-toast';
 
 export const UserContext = React.createContext();
 
@@ -12,6 +13,7 @@ export const UserProvider = ({ children }) => {
 	const [loading, setLoading] = useState(false);
 	const [currentUser, setCurrentUser] = useState(null);
 	const [tweets, setTweets] = useState([]);
+	const [myTweets, setMyTweets] = useState([]);
 
 	const checkIfWalletIsConnected = async () => {
 		try {
@@ -53,9 +55,38 @@ export const UserProvider = ({ children }) => {
 	};
 
 	const createUser = async (username, name, avatar) => {
+		if (!username || !name) {
+			toast.error('Username and name must not be empty');
+			return;
+		}
+
+		if (!avatar) {
+			avatar =
+				'https://external-preview.redd.it/RNHBb73nQjSDez_ZxyzDTA3inn0E0G670g29PqEdJbI.jpg?auto=webp&s=3e648825a26d115990fb327986c37e51e023fb0b';
+		}
+
 		const contract = getContractWrite();
-		const tx = await contract.signup(username, name, avatar);
-		await tx.wait();
+
+		const tx = await toast.promise(
+			contract.signup(username, name, avatar),
+			{
+				loading: 'Creating user',
+				success: 'Successfully registered!',
+				error: handleErr,
+			},
+			{
+				success: {
+					icon: '🥳',
+				},
+			}
+		);
+
+		await toast.promise(tx.wait(), {
+			loading: 'Minning transaction, Hold tight!',
+			success: 'Minned successfully !',
+			error: 'please wait 5 min and try again',
+		});
+
 		getUser();
 	};
 
@@ -82,8 +113,27 @@ export const UserProvider = ({ children }) => {
 
 	const postTweet = async (tweet) => {
 		const contract = getContractWrite();
-		const tx = await contract.postDweet(tweet);
-		await tx.wait();
+
+		const tx = await toast.promise(
+			contract.postDweet(tweet),
+			{
+				loading: 'Publishing your tweet',
+				success: 'Your Tweet is published!',
+				error: handleErr,
+			},
+			{
+				success: {
+					icon: '🚀',
+				},
+			}
+		);
+
+		await toast.promise(tx.wait(), {
+			loading: 'Minning transaction, Hold tight!',
+			success: 'Minned successfully !',
+			error: 'please wait 5 min and try again',
+		});
+
 		getAllTweet();
 	};
 
@@ -92,6 +142,24 @@ export const UserProvider = ({ children }) => {
 		const tx = await contract.deleteTweet(tweetId);
 		await tx.wait();
 		getAllTweet();
+	};
+
+	const fetchMyTweets = async () => {
+		const contract = getContractReadOnly();
+		const allTweets = await contract.getCreatedTweets(currentAccount);
+		let populateAuthor = await Promise.all(
+			allTweets.map(async (tweet) => {
+				const user = await contract.getUser(tweet.author);
+				return {
+					author: user,
+					timestamp: tweet.timestamp,
+					content: tweet.content,
+					id: tweet.id,
+				};
+			})
+		);
+
+		setMyTweets(populateAuthor);
 	};
 
 	useEffect(() => {
@@ -134,6 +202,8 @@ export const UserProvider = ({ children }) => {
 				getAllTweet,
 				tweets,
 				deleteTweet,
+				fetchMyTweets,
+				myTweets,
 			}}
 		>
 			{children}

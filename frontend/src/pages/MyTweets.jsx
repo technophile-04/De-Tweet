@@ -1,12 +1,17 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../providers/userContext';
 import moment from 'moment';
 import Card from '../components/Card';
 import uuid from 'react-uuid';
 
-const Home = () => {
-	const { postTweet, currentUser, tweets } = useContext(UserContext);
+const MyTweets = () => {
+	const { postTweet, currentUser, myTweets, fetchMyTweets } =
+		useContext(UserContext);
 	const [tweet, setTweet] = useState('');
+
+	useEffect(() => {
+		fetchMyTweets();
+	}, []);
 
 	return (
 		<div className="container mx-auto flex flex-col items-center justify-center space-y-5 pb-4">
@@ -36,19 +41,25 @@ const Home = () => {
 					Tweet 🚀
 				</button>
 			</div>
-			{tweets
-				?.map((tweet, index) => (
-					<Card
-						message={tweet.content}
-						timeStamp={moment(tweet.timestamp.toString() * 1000).fromNow()}
-						author={tweet.author}
-						key={uuid()}
-						tweetId={tweet.id}
-					/>
-				))
-				.reverse()}
+			{myTweets.length === 0 ? (
+				<h1 className="text-3xl font-semibold text-gray-700">
+					No Tweetes Created
+				</h1>
+			) : (
+				myTweets
+					?.map((tweet, index) => (
+						<Card
+							message={tweet.content}
+							timeStamp={moment(tweet.timestamp.toString() * 1000).fromNow()}
+							author={tweet.author}
+							key={uuid()}
+							tweetId={tweet.id}
+						/>
+					))
+					.reverse()
+			)}
 		</div>
 	);
 };
 
-export default Home;
+export default MyTweets;

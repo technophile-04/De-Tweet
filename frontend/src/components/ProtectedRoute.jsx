@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import SignUp from '../pages/SignUp';
 import { UserContext } from '../providers/userContext';
+import Navbar from './Navbar';
 
 const ProtectedRoute = ({ children }) => {
 	const { currentAccount, currentUser } = useContext(UserContext);
@@ -9,7 +10,10 @@ const ProtectedRoute = ({ children }) => {
 		currentUser?.userAddress.toUpperCase() ? (
 		<SignUp />
 	) : (
-		children
+		<div>
+			<Navbar />
+			{children}
+		</div>
 	);
 };
 

@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../providers/userContext';
-import { getContractWrite } from '../utils';
+import { getContractWrite, handleErr } from '../utils';
 
 const UpdateTweet = () => {
 	const { tweetId } = useParams();
@@ -11,8 +12,27 @@ const UpdateTweet = () => {
 
 	const updateTweet = async () => {
 		const contract = getContractWrite();
-		const tx = await contract.updateTweet(tweetId, content);
-		await tx.wait();
+
+		const tx = await toast.promise(
+			contract.updateTweet(tweetId, content),
+			{
+				loading: 'Updating your tweet',
+				success: 'Your Tweet is updated!',
+				error: handleErr,
+			},
+			{
+				success: {
+					icon: '🚀',
+				},
+			}
+		);
+
+		await toast.promise(tx.wait(), {
+			loading: 'Minning transaction, Hold tight!',
+			success: 'Minned successfully !',
+			error: 'please wait 5 min and try again',
+		});
+
 		navigate('/');
 	};
 
