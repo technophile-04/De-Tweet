@@ -1,11 +1,18 @@
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../providers/userContext';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
+import uuid from 'react-uuid';
+import moment from 'moment';
+import Card from '../components/Card';
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 const SignUp = () => {
-	const { createUser } = useContext(UserContext);
+	const {
+		createUser,
+		loading: loadingTweets,
+		tweets,
+	} = useContext(UserContext);
 
 	const [userName, setUserName] = useState('');
 	const [fullName, setFullName] = useState('');
@@ -97,6 +104,21 @@ const SignUp = () => {
 					{loading ? loading : 'Sign Up'}
 				</button>
 			</div>
+			{loadingTweets ? (
+				<h1 className="text-3xl font-semibold text-gray-700">Loading...</h1>
+			) : (
+				tweets
+					?.map((tweet, index) => (
+						<Card
+							message={tweet.content}
+							timeStamp={moment(tweet.timestamp.toString() * 1000).fromNow()}
+							author={tweet.author}
+							key={uuid()}
+							tweetId={tweet.id}
+						/>
+					))
+					.reverse()
+			)}
 		</div>
 	);
 };
