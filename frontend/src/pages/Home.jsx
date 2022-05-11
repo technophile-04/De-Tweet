@@ -5,7 +5,7 @@ import Card from '../components/Card';
 import uuid from 'react-uuid';
 
 const Home = () => {
-	const { postTweet, currentUser, tweets } = useContext(UserContext);
+	const { postTweet, currentUser, tweets, loading } = useContext(UserContext);
 	const [tweet, setTweet] = useState('');
 
 	return (
@@ -36,17 +36,21 @@ const Home = () => {
 					Tweet 🚀
 				</button>
 			</div>
-			{tweets
-				?.map((tweet, index) => (
-					<Card
-						message={tweet.content}
-						timeStamp={moment(tweet.timestamp.toString() * 1000).fromNow()}
-						author={tweet.author}
-						key={uuid()}
-						tweetId={tweet.id}
-					/>
-				))
-				.reverse()}
+			{loading ? (
+				<h1 className="text-3xl font-semibold text-gray-700">Loading...</h1>
+			) : (
+				tweets
+					?.map((tweet, index) => (
+						<Card
+							message={tweet.content}
+							timeStamp={moment(tweet.timestamp.toString() * 1000).fromNow()}
+							author={tweet.author}
+							key={uuid()}
+							tweetId={tweet.id}
+						/>
+					))
+					.reverse()
+			)}
 		</div>
 	);
 };

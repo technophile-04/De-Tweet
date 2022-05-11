@@ -92,6 +92,9 @@ export const UserProvider = ({ children }) => {
 
 	const getAllTweet = async () => {
 		const contract = getContractReadOnly();
+
+		setLoading(true);
+
 		const dweets = await contract.getAllTweets();
 		let populateAuthor = [];
 
@@ -109,6 +112,7 @@ export const UserProvider = ({ children }) => {
 
 		console.log(populateAuthor);
 		setTweets(populateAuthor);
+		setLoading(false);
 	};
 
 	const postTweet = async (tweet) => {
@@ -145,6 +149,7 @@ export const UserProvider = ({ children }) => {
 	};
 
 	const fetchMyTweets = async () => {
+		setLoading(true);
 		const contract = getContractReadOnly();
 		const allTweets = await contract.getCreatedTweets(currentAccount);
 		let populateAuthor = await Promise.all(
@@ -160,6 +165,7 @@ export const UserProvider = ({ children }) => {
 		);
 
 		setMyTweets(populateAuthor);
+		setLoading(false);
 	};
 
 	useEffect(() => {
@@ -168,7 +174,7 @@ export const UserProvider = ({ children }) => {
 				const provider = new ethers.providers.Web3Provider(ethereum);
 				const { chainId } = await provider.getNetwork(provider);
 				console.log('CHAIN ID : ', chainId);
-				setIsCorrectNetwork(chainId === 31337);
+				setIsCorrectNetwork(chainId === 80001);
 			};
 
 			ethereum.on('accountsChanged', (accounts) => {

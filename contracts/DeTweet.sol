@@ -108,4 +108,33 @@ contract DeTweet {
         Tweet storage currentTweet = idToTweet[_tweetId];
         currentTweet.content = _content;
     }
+
+    function getCreatedTweets(address _userAddress)
+        public
+        view
+        returns (Tweet[] memory)
+    {
+        require(_userAddress != address(0), "User not found");
+        uint myTweetLen = 0;
+        for (uint i = 0; i < tweetIds.length; i++) {
+            uint currentId = tweetIds[i];
+            Tweet storage currentTweet = idToTweet[currentId];
+            if (currentTweet.author == _userAddress) {
+                myTweetLen++;
+            }
+        }
+
+        Tweet[] memory allTweets = new Tweet[](myTweetLen);
+        uint currIndex = 0;
+        for (uint i = 0; i < tweetIds.length; i++) {
+            uint currentId = tweetIds[i];
+            Tweet storage currentTweet = idToTweet[currentId];
+            if (currentTweet.author == _userAddress) {
+                allTweets[currIndex] = currentTweet;
+                currIndex++;
+            }
+        }
+
+        return allTweets;
+    }
 }
