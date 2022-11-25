@@ -16,9 +16,13 @@ const Card = ({ message, timeStamp, author, tweetId }) => {
 					<div className="flex items-center">
 						<img
 							className="w-10 h-10 rounded-full mr-4"
-							src={`https://ipfs.fleek.co/ipfs/${
-								author.imgURI.split("ipfs/")[1]
-							}`}
+							src={
+								author.imgURI.includes("external-preview.redd.it")
+									? author.imgURI
+									: `https://ipfs.fleek.co/ipfs/${
+											author.imgURI.split("ipfs/")[1]
+									  }`
+							}
 							alt="Avatar"
 						/>
 						<div className="text-sm">
