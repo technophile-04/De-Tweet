@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { UserContext } from '../providers/userContext';
-import { getContractReadOnly } from '../utils';
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../providers/userContext";
+import { getContractReadOnly } from "../utils";
 
 const UserProfile = () => {
 	const { userAddress } = useParams();
@@ -25,7 +25,13 @@ const UserProfile = () => {
 					Welcome to De-Tweet 🚀
 				</h1>
 				<img
-					src={currUser.imgURI}
+					src={
+						currUser.imgURI.includes("external-preview.redd.it")
+							? currUser.imgURI
+							: `https://ipfs.fleek.co/ipfs/${
+									currUser.imgURI.split("ipfs/")[1]
+							  }`
+					}
 					alt="avatar"
 					className="w-20 h-30 rounded-full self-center"
 				/>
@@ -58,7 +64,7 @@ const UserProfile = () => {
 				</div>
 				<button
 					className="h-10 px-6 font-semibold rounded-md bg-green-400 text-white"
-					onClick={() => navigate('/')}
+					onClick={() => navigate("/")}
 				>
 					back
 				</button>
